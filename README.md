@@ -5,6 +5,9 @@ Aplikasi Point of Sale (POS) berbasis web untuk toko retail, dibangun dengan Lar
 ## Build Status 
 [![Automated Tests](https://github.com/jovinjuan/pos-retail/actions/workflows/tests.yml/badge.svg)](https://github.com/jovinjuan/pos-retail/actions/workflows/tests.yml)
 
+## Test Coverage 
+[![codecov](https://codecov.io/github/jovinjuan/pos-retail/branch/main/graph/badge.svg?token=RFJSBJWVYV)](https://codecov.io/github/jovinjuan/pos-retail)
+
 ## Tech Stack
 
 - **Backend**: Laravel 12
