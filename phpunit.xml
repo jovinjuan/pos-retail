@@ -20,6 +20,7 @@
     </source>
     <coverage>
         <report>
+            <clover outputFile="build/logs/clover.xml"/>
             <html outputDirectory="build/coverage"/>
         </report>
     </coverage>
