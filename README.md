@@ -2,6 +2,9 @@
 
 Aplikasi Point of Sale (POS) berbasis web untuk toko retail, dibangun dengan Laravel, Filament v3, dan PostgreSQL. Sistem ini mencakup manajemen produk & inventori, transaksi penjualan (kasir), dan laporan analitik — semuanya dapat diakses oleh satu akun Owner melalui panel admin Filament.
 
+## Build Status 
+[![Automated Tests](https://github.com/jovinjuan/pos-retail/actions/workflows/tests.yml/badge.svg)](https://github.com/jovinjuan/pos-retail/actions/workflows/tests.yml)
+
 ## Tech Stack
 
 - **Backend**: Laravel 12
@@ -127,3 +130,4 @@ Menguji interaksi antar komponen dengan database PostgreSQL nyata. Menggunakan `
 ### CI/CD
 
 GitHub Actions otomatis menjalankan semua test pada setiap push ke branch `main` dan `develop`. Workflow tersedia di `.github/workflows/tests.yml`.
+
