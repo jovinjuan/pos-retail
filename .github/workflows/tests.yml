@@ -15,6 +15,7 @@ jobs:
         image: postgres:16-alpine
         env:
           POSTGRES_DB: pos_test
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: secret
         ports:
           - 5432:5432
@@ -24,8 +25,16 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: pos_test
+      DB_USERNAME: postgres
+      DB_PASSWORD: secret
+
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup PHP
@@ -35,22 +44,16 @@ jobs:
           extensions: pdo_pgsql, bcmath, gd, zip, pcov
           coverage: pcov
 
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Prepare App
+      - name: Prepare Application
         run: |
           cp .env.example .env
           php artisan key:generate
 
-      - name: Run Tests
-        env:
-          DB_CONNECTION: pgsql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 5432
-          DB_DATABASE: pos_test
-          DB_USERNAME: postgres
-          DB_PASSWORD: secret
-        run: |
-          php artisan migrate --force
-          php artisan test --coverage-text
+      - name: Run Database Migrations
+        run: php artisan migrate --force
+
+      - name: Execute All Tests with Coverage
+        run: php artisan test --coverage-text
