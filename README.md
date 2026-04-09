@@ -1,59 +1,129 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# POS Retail
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi Point of Sale (POS) berbasis web untuk toko retail, dibangun dengan Laravel, Filament v3, dan PostgreSQL. Sistem ini mencakup manajemen produk & inventori, transaksi penjualan (kasir), dan laporan analitik — semuanya dapat diakses oleh satu akun Owner melalui panel admin Filament.
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Backend**: Laravel 12
+- **Admin Panel / UI**: Filament v3
+- **Database**: PostgreSQL 16
+- **Auth**: Filament built-in authentication
+- **Containerization**: Docker + Nginx + PHP-FPM
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Cara Menjalankan Aplikasi
 
-## Learning Laravel
+### Menggunakan Docker (Direkomendasikan)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+**Prasyarat**: Docker Desktop terinstall dan berjalan.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+# 1. Clone repo dan masuk ke direktori
+cd pos-retail
 
-## Laravel Sponsors
+# 2. Build dan jalankan container
+docker-compose up -d --build
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# 3. Jalankan migrasi dan seeder
+docker-compose exec app php artisan migrate --seed
+```
 
-### Premium Partners
+Akses aplikasi di: `http://localhost:8080/admin`
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+**Akun default Owner:**
+- Email: `owner@pos.local`
+- Password: `password`
 
-## Contributing
+### Tanpa Docker (Local)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Prasyarat**: PHP 8.3+, PostgreSQL, Composer, Node.js.
 
-## Code of Conduct
+```bash
+# 1. Install dependencies
+composer install
+npm install && npm run build
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 2. Setup environment
+cp .env.example .env
+php artisan key:generate
 
-## Security Vulnerabilities
+# 3. Konfigurasi database di .env
+# DB_CONNECTION=pgsql
+# DB_HOST=127.0.0.1
+# DB_DATABASE=pos
+# DB_USERNAME=postgres
+# DB_PASSWORD=your_password
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 4. Migrasi dan seeder
+php artisan migrate --seed
 
-## License
+# 5. Jalankan server
+php artisan serve
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Akses aplikasi di: `http://localhost:8000/admin`
+
+---
+
+## Cara Menjalankan Test
+
+### Semua Test
+
+```bash
+php artisan test
+```
+
+### Per Suite
+
+```bash
+# Unit tests saja
+php artisan test --testsuite=Unit
+
+# Integration tests saja
+php artisan test --testsuite=Integration
+```
+
+### Dengan Coverage Report
+
+```bash
+php artisan test --testsuite=Integration --coverage-text
+```
+
+> Coverage membutuhkan ekstensi PCOV atau Xdebug. Pastikan sudah terinstall di PHP kamu.
+
+---
+
+## Strategi Pengujian
+
+Pengujian menggunakan dua level yang saling melengkapi:
+
+### Unit Tests (`tests/Unit/`)
+
+Menguji logika bisnis murni di Service class dan Model **tanpa menyentuh database**. Setiap test berjalan secara terisolasi menggunakan mock atau objek sederhana.
+
+| File | Yang Diuji |
+|---|---|
+| `Unit/Services/TransactionServiceTest` | Kalkulasi subtotal, total, kembalian, format invoice |
+| `Unit/Services/InventoryServiceTest` | Validasi stok negatif |
+| `Unit/Services/ReportServiceTest` | Kalkulasi rata-rata transaksi |
+| `Unit/Models/ProductTest` | Scope `active` dan `belowMinStock` |
+
+**Target**: 30 test cases, tidak ada dependency ke database.
+
+### Integration Tests (`tests/Integration/`)
+
+Menguji interaksi antar komponen dengan database PostgreSQL nyata. Menggunakan `RefreshDatabase` trait untuk memastikan setiap test dimulai dari state bersih.
+
+| File | Yang Diuji |
+|---|---|
+| `Integration/Services/TransactionServiceTest` | Checkout flow, pengurangan stok, cancel transaksi |
+| `Integration/Services/InventoryServiceTest` | Penyesuaian stok, validasi stok negatif di DB |
+| `Integration/Services/ReportServiceTest` | Query laporan harian, top produk, distribusi pembayaran |
+| `Integration/Pages/KasirPageTest` | Pencarian produk aktif, kalkulasi cart, kembalian |
+
+**Target**: 15 test cases, coverage ≥ 80% pada `app/Services` dan `app/Models`.
+
+### CI/CD
+
+GitHub Actions otomatis menjalankan semua test pada setiap push ke branch `main` dan `develop`. Workflow tersedia di `.github/workflows/tests.yml`.
