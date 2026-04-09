@@ -52,12 +52,15 @@ jobs:
       - name: Configure test environment
         run: |
           php artisan key:generate
-          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env
-          sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env
-          sed -i 's/DB_PORT=.*/DB_PORT=5432/' .env
-          sed -i 's/DB_DATABASE=.*/DB_DATABASE=pos_test/' .env
-          sed -i 's/DB_USERNAME=.*/DB_USERNAME=postgres/' .env
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret/' .env
+          echo "DB_CONNECTION=pgsql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=5432" >> .env
+          echo "DB_DATABASE=pos_test" >> .env
+          echo "DB_USERNAME=postgres" >> .env
+          echo "DB_PASSWORD=secret" >> .env
+          echo "SESSION_DRIVER=array" >> .env
+          echo "CACHE_STORE=array" >> .env
+          echo "QUEUE_CONNECTION=sync" >> .env
 
       - name: Run migrations
         run: php artisan migrate --force
