@@ -56,17 +56,9 @@ jobs:
         run: php artisan migrate --force
 
       - name: Execute All Tests with Coverage
-        run: php artisan test --coverage-text
-
-      - name: Upload Test Coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-coverage-report
-          path: build/coverage- name: Execute All Tests with Coverage
-  
         run: php artisan test --coverage-clover build/logs/clover.xml
 
-      - name: Upload coverage reports to Codecov
+      - name: Upload Test Coverage + Integrate CodeCov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
