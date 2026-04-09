@@ -2,9 +2,9 @@ name: Automated Tests
 
 on:
   push:
-    branches: [main, master, develop]
+    branches: [main, develop]
   pull_request:
-    branches: [main, master, develop]
+    branches: [main, develop]
 
 jobs:
   test:
@@ -15,7 +15,6 @@ jobs:
         image: postgres:16-alpine
         env:
           POSTGRES_DB: pos_test
-          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: secret
         ports:
           - 5432:5432
@@ -32,41 +31,26 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
-          extensions: pdo, pdo_pgsql, gd, zip, bcmath, intl, pcntl
-          coverage: none
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-
+          php-version: "8.3"
+          extensions: pdo_pgsql, bcmath, gd, zip, pcov
+          coverage: pcov
 
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: composer install --no-interaction --prefer-dist
 
-      - name: Copy .env
-        run: cp .env.example .env
-
-      - name: Configure test environment
+      - name: Prepare App
         run: |
+          cp .env.example .env
           php artisan key:generate
-          echo "DB_CONNECTION=pgsql" >> .env
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_PORT=5432" >> .env
-          echo "DB_DATABASE=pos_test" >> .env
-          echo "DB_USERNAME=postgres" >> .env
-          echo "DB_PASSWORD=secret" >> .env
-          echo "SESSION_DRIVER=array" >> .env
-          echo "CACHE_STORE=array" >> .env
-          echo "QUEUE_CONNECTION=sync" >> .env
 
-      - name: Run migrations
-        run: php artisan migrate --force
-
-      - name: Run Unit Tests
-        run: php artisan test --testsuite=Unit
-
-      - name: Run Integration Tests
-        run: php artisan test --testsuite=Integration
+      - name: Run Tests
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: pos_test
+          DB_USERNAME: postgres
+          DB_PASSWORD: secret
+        run: |
+          php artisan migrate --force
+          php artisan test --coverage-text
