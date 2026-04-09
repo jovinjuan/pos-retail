@@ -20,8 +20,7 @@
     </source>
     <coverage>
         <report>
-            <html outputDirectory="build/coverage"/>
-            <text outputFile="php://stdout" showUncoveredFiles="false"/>
+            <text showUncoveredFiles="false" showOnlySummary="true"/>
         </report>
     </coverage>
     <php>
