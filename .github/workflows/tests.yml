@@ -56,7 +56,7 @@ jobs:
         run: php artisan migrate --force
 
       - name: Execute All Tests with Coverage
-        run: php artisan test --coverage-clover build/logs/clover.xml
+        run: php artisan test --coverage-clover build/logs/clover.xml --coverage-html build/coverage-html
       
       - name: Generate Test Coverage Report
         uses: actions/upload-artifact@v4
