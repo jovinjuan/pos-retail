@@ -2,9 +2,9 @@ name: Automated Tests
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 jobs:
   test:
@@ -57,6 +57,12 @@ jobs:
 
       - name: Execute All Tests with Coverage
         run: php artisan test --coverage-clover build/logs/clover.xml
+      
+      - name: Generate Test Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-xml
+          path: build/logs/clover.xml
 
       - name: Upload Test Coverage + Integrate CodeCov
         uses: codecov/codecov-action@v4
